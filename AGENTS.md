@@ -278,11 +278,66 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 ### Importante: Hosting
 - **Netlify NÃO funciona** — é só estático, não roda Node.js
 - Usar **Vercel** ou **Railway** — suportam Node.js
+- **vercel.json NÃO pode ter catch-all** — Lambda do Vercel não tem acesso a arquivos estáticos (imagens, HTML, CSS)
+- Só rotas de API/webhook/oauth devem ir pro serverless; o resto o Vercel serve direto
 
 ### Order ID de teste pra webhook
 - Último Order ID gerado (sandbox): `ORDTST01M08RR7JW74RCNCYGC8VXAMM4`
 - Para gerar novo: rodar `npm start`, acessar localhost:8080, fazer pagamento Pix
 - Usar esse ID no painel MP pra simular notificação webhook
+
+## Erros corrigidos (18/ago/2026)
+
+### 1. Erro `invalid_users_involved` no Pix
+- **Erro:** `PAY01M09S1ZCESTKYHB7R7H3JDCKE: invalid_users_involved`
+- **Causa:** O comprador e o vendedor eram a mesma conta do Mercado Pago
+- **Solução:** O comprador precisa usar uma conta DIFERENTE do MP (outro CPF e email)
+- **Regra MP:** Não é possível pagar a si mesmo
+
+### 2. Detecção de sandbox errada (email forçado pra @testuser.com)
+- **Bug:** `isSandbox` usava `!token.includes('production')` — tokens de produção não contêm "production"
+- **Resultado:** Todos os emails eram forçados pra `@testuser.com` em produção
+- **Correção:** Removida a lógica de sandbox detection — email enviado como o usuário digita
+
+### 3. Elo cards detectados como Mastercard
+- **Bug:** Checagem Elo vinha DEPOIS de Mastercard no `detectCardBrand()`
+- **Resultado:** Cartões Elo 5041/5066/5067 eram detectados como Mastercard (`5[1-5]`)
+- **Correção:** Elo checado ANTES de Mastercard (e Amex antes dos dois)
+
+### 4. Path traversal no server.js
+- **Bug:** `path.join(__dirname, url)` com `../` no URL podia acessar arquivos fora do diretório
+- **Correção:** Validação `filePath.startsWith(__dirname)` antes de servir arquivo
+
+### 5. Variável `body` sobrescrevendo parâmetro no mpPost
+- **Bug:** `let body = ''` na response callback sobrescia o parâmetro `body` da function
+- **Correção:** Renomeada pra `responseBody`
+
+### 6. Formulário Pix/Boleto sumia após erro
+- **Bug:** Após erro na criação da Order, `pixForm`/`boletoForm` ficava com `display: none`
+- **Resultado:** Usuário não conseguia corrigir dados e retry
+- **Correção:** Formulário exibido novamente no catch
+
+### 7. Cartão não validava endereço
+- **Bug:** `payWithCard()` só validava email/nome/CPF/cartão, ignorando CEP/rua/cidade/estado
+- **Correção:** Adicionada validação de endereço completo
+
+### 8. Footer com ano 2025
+- **Correção:** Atualizado pra 2026
+
+### 9. Imagem avatar 404 no Vercel
+- **Bug:** `vercel.json` tinha catch-all `"src": "/(.*)"` mandando TUDO pro serverless
+- **Resultado:** Lambda do Vercel não tem acesso a arquivos estáticos (imagens, HTML)
+- **Correção:** Só `/api/*`, `/webhooks/*`, `/oauth/*` vão pro Lambda; resto é servido estaticamente pelo Vercel
+
+### Detecção de bandeira (ordem corrigida)
+```
+1. Visa: /^4/
+2. Amex: /^3[47]/
+3. Elo: /^(4011|4312|4573|4574|5041|5066|5067|6277|6362|6504|6505|6516)/
+4. Mastercard: /^5[1-5]/ ou /^2[2-7]/
+5. Discover: /^6(?:011|5)/ (usa rede master no MP)
+6. Fallback: master
+```
 
 ## Observações
 - Access Token NUNCA no frontend
@@ -306,25 +361,27 @@ O SDK Node.js do Mercado Pago (v2.13.0) tem validação estrita no método `Orde
 Usar **HTTP direto** (`https.request`) pra criação de Orders ao invés do SDK:
 
 ```js
-async function mpPost(path, body, idempotencyKey) {
+async function mpPost(path, body, idempotencyKey, extraHeaders = {}) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify(body);
+    const headers = {
+      'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+      'Content-Type': 'application/json',
+      'X-Idempotency-Key': idempotencyKey,
+      'Content-Length': Buffer.byteLength(data),
+      ...extraHeaders
+    };
     const req = https.request({
       hostname: 'api.mercadopago.com',
       port: 443,
       path,
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.MP_ACCESS_TOKEN}`,
-        'Content-Type': 'application/json',
-        'X-Idempotency-Key': idempotencyKey,
-        'Content-Length': Buffer.byteLength(data)
-      }
+      headers
     }, (res) => {
-      let body = '';
-      res.on('data', c => body += c);
+      let responseBody = '';
+      res.on('data', c => responseBody += c);
       res.on('end', () => {
-        try { resolve(JSON.parse(body)); }
+        try { resolve(JSON.parse(responseBody)); }
         catch { reject(new Error('Resposta inválida do MP')); }
       });
     });
