@@ -164,6 +164,16 @@ As notificações Webhooks permitem ao Mercado Pago enviar informações em **te
 - Amex: começa com 3[47]
 - Fallback: master
 
+## Credenciais e Tokens
+**ATENÇÃO: Todos os tokens estão no arquivo `.env` (gitignored, não commitado).**
+Leia `/public/.env` no início de cada sessão pra acessar:
+- `GITHUB_PAT` — GitHub Personal Access Token (push ao repo)
+- `VERCEL_TOKEN` — Vercel API token (gerenciar env vars e deploys)
+- `VERCEL_TEAM_ID` — Team ID do Vercel
+- `MP_ACCESS_TOKEN` — Mercado Pago Access Token (sandbox)
+- `MP_PUBLIC_KEY` — Mercado Pago Public Key (sandbox)
+- `MP_WEBHOOK_SECRET` — Secret do webhook
+
 ## GitHub
 - Repositório: https://github.com/Web-site-007/martina-olvr
 - Branch: main
