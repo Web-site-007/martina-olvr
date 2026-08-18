@@ -538,3 +538,72 @@ FINASSETS_PROJECT_KEY=Project Key do tipo Checkout
 - Sandbox requer contato com suporte (basic auth)
 - API key tem rate limit de 100 req/min
 - Checkout expira conforme configuração do projeto
+
+---
+
+# Sessão 18/ago/2026 — O que foi feito
+
+## Problema original
+- Irmão da Martina tem conta no Mercado Pago
+- Quando clientes pagam via Pix/Boleto, **o nome do irmão aparece** no comprovante
+- Queriam uma opção onde o nome pessoal **não aparece**
+
+## Pesquisa realizada
+1. **Mercado Pago** — Confirmado: Pix/Boleto SEMPRE mostra nome do titular. Não tem como mudar via API.
+2. **DeFlow Exchange** — PIX↔DePix (Liquid Network). Taxa ~7% no depósito. **Muito cara, descartada.**
+3. **GGPIXAPI** — PIX, boleto, cartão, crypto. Taxa ~0.77%. Boa opção PIX.
+4. **Finassets** — Crypto gateway. Taxa **0.20% a 0.40%**. **Melhor custo-benefício, escolhida.**
+5. Outras: Cryptomus (0.40%), NOWPayments (1%), BSPay (~1%)
+
+## Solução escolhida: Finassets
+- Taxa mais baixa do mercado (0.20-0.40%)
+- Nome **não aparece** (só endereço de carteira)
+- Aceita USDT (stablecoin, sem volatilidade)
+- API simples: criar checkout → redirecionar → webhook confirma
+
+## Implementação feita
+
+### Backend (server.js)
+- `signFinassetsRequest()` — Assina requests com HMAC-SHA512
+- `finassetsRequest()` — Faz requests à API
+- `validateFinassetsWebhook()` — Valida webhook
+- `POST /api/create-checkout` — Cria checkout
+- `GET /api/checkout/:id` — Consulta status
+- `POST /webhooks/finassets` — Webhook receiver
+
+### Frontend (index.html)
+- Tab "Crypto" adicionada ao modal de pagamento
+- CSS para features (Seguro, Rápido, Taxa baixa)
+- Função `payWithCrypto()` — Cria checkout e redireciona
+- `switchTab()` e `resetModal()` atualizados
+
+### Deploy
+- Git commit: `401b2e5`
+- Push para GitHub: ✅
+- Vercel: auto-deploy deve ativar em 1-2 min
+
+## Status atual
+- ✅ Código commitado e enviado pro GitHub
+- ⏳ Aguardando deploy no Vercel
+- ⏳ Tab "Crypto" deve aparecer no site em 1-2 min
+
+## Próximos passos (quando voltar)
+1. **Verificar se a tab Crypto aparece** no site (Ctrl+F5)
+2. **Criar conta no Finassets:** https://www.finassets.io/en/account/register/
+3. **Gerar API Key:** Settings > Integration & API Docs > Add API Key
+4. **Criar Project:** Payment Gateway > Projects > Criar projeto do tipo "Checkout"
+5. **Adicionar ao `.env` no Vercel:**
+   ```
+   FINASSETS_API_KEY=xxx
+   FINASSETS_SECRET_KEY=xxx
+   FINASSETS_PROJECT_KEY=xxx
+   ```
+6. **Configurar Webhook:** Settings > Integration & API Docs > URL: `https://martina-olvr.vercel.app/webhooks/finassets`
+7. **Testar:** Clicar em Crypto → fazer pagamento de teste
+
+## Credenciais Finassets (adicionar ao .env)
+```
+FINASSETS_API_KEY=
+FINASSETS_SECRET_KEY=
+FINASSETS_PROJECT_KEY=
+```
