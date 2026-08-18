@@ -218,7 +218,7 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - [x] Trocar credenciais pra produção no Vercel (Access Token + Public Key)
 - [x] Configurar Webhook em produção (URL + Evento Order + Secret)
 - [x] Adicionar MP_SITE_URL e MP_NOTIFICATION_URL ao Vercel
-- [ ] Testar pagamento em produção
+- [ ] Testar pagamento em produção (usando CONTA DIFERENTE do MP — comprador não pode ser o vendedor)
 - [ ] Confirmar que webhook dispara ao receber pagamento
 - [ ] Medir qualidade MP novamente (meta: 100/100)
 
