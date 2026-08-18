@@ -65,7 +65,7 @@ const MIME = {
 };
 
 // Site URL
-const SITE_URL = process.env.MP_SITE_URL || `http://localhost:${PORT}`;
+const SITE_URL = process.env.MP_SITE_URL || (process.env.VERCEL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${PORT}`);
 const NOTIFICATION_URL = process.env.MP_NOTIFICATION_URL || `${SITE_URL}/webhooks/mercadopago`;
 
 // Planos
