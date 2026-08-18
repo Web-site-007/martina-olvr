@@ -1,3 +1,6 @@
+# INSTRUÇÃO AUTOMÁTICA
+Ao iniciar cada sessão, LEIA este AGENTS.md inteiro. Ao FINALIZAR qualquer tarefa ou conversa, ATUALIZE este arquivo com tudo que foi feito, decidido, corrigido ou descoberto — SEMPRE, sem o usuário precisar pedir. Salve tudo: erros encontrados, soluções aplicadas, configurações mudadas, o que funciona e o que não funciona.
+
 # Projeto: Integração Mercado Pago
 
 ## O que é
@@ -218,6 +221,7 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - [x] Trocar credenciais pra produção no Vercel (Access Token + Public Key)
 - [x] Configurar Webhook em produção (URL + Evento Order + Secret)
 - [x] Adicionar MP_SITE_URL e MP_NOTIFICATION_URL ao Vercel
+- [x] Corrigir site 404 no Vercel (catch-all + includeFiles)
 - [ ] Testar pagamento em produção (usando CONTA DIFERENTE do MP — comprador não pode ser o vendedor)
 - [ ] Confirmar que webhook dispara ao receber pagamento
 - [ ] Medir qualidade MP novamente (meta: 100/100)
@@ -278,8 +282,9 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 ### Importante: Hosting
 - **Netlify NÃO funciona** — é só estático, não roda Node.js
 - Usar **Vercel** ou **Railway** — suportam Node.js
-- **vercel.json NÃO pode ter catch-all** — Lambda do Vercel não tem acesso a arquivos estáticos (imagens, HTML, CSS)
-- Só rotas de API/webhook/oauth devem ir pro serverless; o resto o Vercel serve direto
+- **vercel.json DEVE ter catch-all** mandando tudo pro server.js + `includeFiles` pra incluir imagens/assets no bundle do Lambda
+- O server.js já tem lógica pra servir arquivos estáticos (fs.readFile), então o catch-all funciona corretamente
+- SEM catch-all, arquivos estáticos (HTML, imagens) retornam 404 no Vercel
 
 ### Order ID de teste pra webhook
 - Último Order ID gerado (sandbox): `ORDTST01M08RR7JW74RCNCYGC8VXAMM4`
@@ -328,6 +333,13 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - **Bug:** `vercel.json` tinha catch-all `"src": "/(.*)"` mandando TUDO pro serverless
 - **Resultado:** Lambda do Vercel não tem acesso a arquivos estáticos (imagens, HTML)
 - **Correção:** Só `/api/*`, `/webhooks/*`, `/oauth/*` vão pro Lambda; resto é servido estaticamente pelo Vercel
+
+### 10. Site 404 no Vercel (todas as rotas)
+- **Bug:** Com routes só pra API, arquivos estáticos (index.html, imagens) retornavam 404
+- **Resultado:** O Vercel não servia arquivos estáticos automaticamente quando o projeto usa `builds` config
+- **Correção:** Adicionar catch-all `"src": "/(.*)", "dest": "server.js"` + `"includeFiles": ["images/**", "assets/**", "api/**"]` no build config
+- **Por que funciona agora:** O server.js tem lógica de servir arquivos estáticos via `fs.readFile`, e o `includeFiles` garante que imagens/assets entrem no bundle do Lambda
+- **Anotação:** O `handle: "filesystem"` do Vercel NÃO funcionou pra este caso
 
 ### Detecção de bandeira (ordem corrigida)
 ```
