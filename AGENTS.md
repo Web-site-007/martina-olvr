@@ -170,9 +170,9 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - `GITHUB_PAT` — GitHub Personal Access Token (push ao repo)
 - `VERCEL_TOKEN` — Vercel API token (gerenciar env vars e deploys)
 - `VERCEL_TEAM_ID` — Team ID do Vercel
-- `MP_ACCESS_TOKEN` — Mercado Pago Access Token (sandbox)
-- `MP_PUBLIC_KEY` — Mercado Pago Public Key (sandbox)
-- `MP_WEBHOOK_SECRET` — Secret do webhook
+- `MP_ACCESS_TOKEN` — Mercado Pago Access Token (**PRODUÇÃO**)
+- `MP_PUBLIC_KEY` — Mercado Pago Public Key (**PRODUÇÃO**)
+- `MP_WEBHOOK_SECRET` — Secret do webhook (**PRODUÇÃO**)
 
 ## GitHub
 - Repositório: https://github.com/Web-site-007/martina-olvr
@@ -214,13 +214,13 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - [x] Configurar variáveis de ambiente no Vercel (MP_ACCESS_TOKEN, MP_PUBLIC_KEY, MP_WEBHOOK_SECRET)
 - [x] Configurar webhook no painel Mercado Pago (sandbox)
 - [x] Adicionar endpoints OAuth (/oauth/authorize, /oauth/callback) para qualidade MP
+- [x] Gerar credenciais de produção no Mercado Pago
+- [x] Trocar credenciais pra produção no Vercel (Access Token + Public Key)
+- [x] Configurar Webhook em produção (URL + Evento Order + Secret)
+- [x] Adicionar MP_SITE_URL e MP_NOTIFICATION_URL ao Vercel
 - [ ] Testar pagamento em produção
 - [ ] Confirmar que webhook dispara ao receber pagamento
 - [ ] Medir qualidade MP novamente (meta: 100/100)
-- [ ] Gerar credenciais de produção no Mercado Pago
-- [ ] Trocar credenciais pra produção no Vercel
-- [ ] Testar Pix, Cartão e Boleto em produção
-- [ ] Configurar webhook em produção
 
 ## Medição de Qualidade MP (14 itens)
 **Data:** 18/ago/2026 | **Resultado:** 79/100 | **Pendente:** 4 tarefas
@@ -230,13 +230,12 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 |-----------|--------|------|
 | SDK do frontend | ✅ Implementado | `sdk.mercadopago.com/js/v2` + inicialização |
 | OAuth | ✅ Endpoints criados | `/oauth/authorize` + `/oauth/callback` |
-| Webhook | ⚠️ Configurado | Precisa de 1 pagamento confirmado pra validar |
+| Webhook | ✅ Configurado | Produção ativa, secret configurado |
 | Integrator ID | ❌ Não se aplica | Só para Programa de Parcerias |
 
 ### Ação necessária
-1. Usuário precisa pagar um Pix no sandbox pra webhook disparar
+1. Usuário precisa testar pagamento real pra webhook disparar
 2. Depois medir qualidade novamente — deve subir pra 100/100
-3. Com 100/100, gerar credenciais de produção
 
 ## Para ir pra produção
 
@@ -291,7 +290,7 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - Usar variáveis de ambiente para credenciais
 - O formulário de pagamento é 100% customizado (sem usar Brick do MP)
 - Token do cartão é gerado pelo SDK do MP no navegador (segurança)
-- Webhook Secret fica em branco até configurar no painel MP
+- Webhook Secret configurado em produção
 
 ## Limitações do SDK v2.13.0
 
