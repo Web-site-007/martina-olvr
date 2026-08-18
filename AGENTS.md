@@ -341,6 +341,12 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - **Por que funciona agora:** O server.js tem lógica de servir arquivos estáticos via `fs.readFile`, e o `includeFiles` garante que imagens/assets entrem no bundle do Lambda
 - **Anotação:** O `handle: "filesystem"` do Vercel NÃO funcionou pra este caso
 
+### 11. Código Pix "copia e cola" parecia pequeno demais
+- **Bug:** A textarea tinha `rows="3"`, escondendo a maior parte do código EMV (300+ chars)
+- **Usuário confundia:** Achava que era "chave Pix" e tentava colar na opção errada do banco
+- **Correção:** Textarea aumentada pra `rows="6"`, adicionado link pro `ticket_url` (página MP com QR code + código completo), e instrução clara: "No app do banco,选择 a opção Pix copia e cola"
+- **Nota:** O campo `qr_code` da Orders API é o EMV completo (começa com `00020126580014br.gov.bcb.pix...`), NÃO é uma "chave Pix"
+
 ### Detecção de bandeira (ordem corrigida)
 ```
 1. Visa: /^4/
