@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Martina Olvr (martinaolvr) • Privacy</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      --primary: #ff1d68;
+      --primary-hover: #e0175c;
+      --bg: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --bg-card-hover: #222;
+      --text: #ffffff;
+      --text-muted: #a0a0a0;
+      --border: rgba(255,255,255,0.08);
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --radius: 16px;
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f5f5;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f0f0f0;
+      --text: #1a1a1a;
+      --text-muted: #6b7280;
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 64px;
+      background: rgba(15,15,15,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 100;
+    }
+    [data-theme="light"] .navbar { background: rgba(255,255,255,0.85); }
+    .navbar-brand { font-size: 1.3rem; font-weight: 700; color: var(--primary); text-decoration: none; }
+    .navbar-actions { display: flex; align-items: center; gap: 12px; }
+    .theme-toggle {
+      width: 40px; height: 40px; border-radius: 50%; border: none;
+      background: var(--bg-card); color: var(--text); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; transition: all 0.2s;
+    }
+    .theme-toggle:hover { background: var(--bg-card-hover); transform: scale(1.05); }
+
+    .container { max-width: 680px; margin: 0 auto; padding: 84px 16px 40px; }
+
+    .profile-banner {
+      width: 100%; height: 160px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      background: linear-gradient(135deg, var(--primary), #7b2ff7, #00b4d8);
+      position: relative; overflow: hidden;
+    }
+    .profile-banner::before {
+      content: ''; position: absolute; inset: 0;
+      background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200"><circle cx="200" cy="100" r="150" fill="rgba(255,255,255,0.05)"/><circle cx="600" cy="50" r="100" fill="rgba(255,255,255,0.03)"/><circle cx="400" cy="180" r="80" fill="rgba(255,255,255,0.04)"/></svg>');
+      background-size: cover;
+    }
+
+    .profile-info {
+      background: var(--bg-card); border-radius: 0 0 var(--radius) var(--radius);
+      padding: 0 24px 28px; position: relative;
+    }
+    .profile-avatar-wrapper {
+      display: flex; justify-content: space-between; align-items: flex-end;
+      margin-top: -44px; margin-bottom: 16px;
+    }
+    .profile-avatar {
+      width: 96px; height: 96px; border-radius: 50%;
+      border: 4px solid var(--bg-card);
+      background: linear-gradient(135deg, var(--primary), #7b2ff7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem; font-weight: 700; color: white; box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .profile-avatar img { width:100%; height:100%; border-radius:50%; object-fit:cover; }
+    .profile-stats { display: flex; gap: 20px; padding-bottom: 6px; }
+    .stat { text-align: center; }
+    .stat-value { font-size: 1.1rem; font-weight: 700; }
+    .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .profile-name { font-size: 1.5rem; font-weight: 700; margin-bottom: 2px; }
+    .profile-handle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px; }
+    .profile-bio { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
+    .profile-social { display: flex; gap: 10px; }
+    .social-icon {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--bg);
+      color: var(--text-muted); display: flex; align-items: center; justify-content: center;
+      text-decoration: none; font-size: 0.85rem; transition: all 0.2s;
+      border: 1px solid var(--border);
+    }
+    .social-icon:hover { background: var(--primary); color: white; border-color: var(--primary); transform: translateY(-2px); }
+
+    .section-title {
+      font-size: 1.1rem; font-weight: 600; margin: 32px 0 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::before { content: ''; width: 4px; height: 20px; background: var(--primary); border-radius: 2px; }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 4px; border-radius: var(--radius); overflow: hidden; }
+    .gallery-item {
+      aspect-ratio: 1; background: var(--bg-card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden;
+    }
+    .gallery-item::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,29,104,0.1), rgba(123,47,247,0.1));
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .gallery-item:hover::before { opacity: 1; }
+    .gallery-item:hover { transform: scale(1.02); z-index: 1; }
+    .gallery-item .placeholder-icon { font-size: 1.8rem; opacity: 0.3; }
+    .gallery-item.locked::after {
+      content: '🔒'; position: absolute; top: 8px; right: 8px; font-size: 0.75rem;
+      background: rgba(0,0,0,0.6); border-radius: 20px; padding: 2px 8px;
+    }
+
+    .plans-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-top: 16px; }
+    .plan-card {
+      background: var(--bg-card); border: 2px solid var(--border);
+      border-radius: var(--radius); padding: 24px 16px; text-align: center;
+      cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+    }
+    .plan-card:hover { border-color: var(--primary); transform: translateY(-4px); box-shadow: 0 8px 32px rgba(255,29,104,0.15); }
+    .plan-card.popular { border-color: var(--primary); }
+    .plan-card.popular::before {
+      content: 'Mais popular'; position: absolute; top: 0; left: 0; right: 0;
+      background: var(--primary); color: white; font-size: 0.65rem; font-weight: 600;
+      padding: 4px; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .plan-card.popular .plan-name { margin-top: 12px; }
+    .plan-name { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+    .plan-price { font-size: 1.8rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .plan-price span { font-size: 0.85rem; font-weight: 400; color: var(--text-muted); }
+    .plan-discount { font-size: 0.75rem; color: #22c55e; font-weight: 600; margin-bottom: 16px; }
+    .plan-btn {
+      width: 100%; padding: 12px; border-radius: 12px; border: none;
+      background: var(--bg); color: var(--text); font-family: inherit;
+      font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+    }
+    .plan-card.popular .plan-btn { background: var(--primary); color: white; }
+    .plan-btn:hover { transform: scale(1.03); }
+
+    .cta-section { margin-top: 32px; }
+    .cta-btn {
+      width: 100%; padding: 18px; border-radius: 14px; border: none;
+      background: var(--primary); color: white; font-family: inherit;
+      font-weight: 700; font-size: 1.05rem; cursor: pointer;
+      transition: all 0.25s; box-shadow: 0 4px 24px rgba(255,29,104,0.3);
+    }
+    .cta-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(255,29,104,0.4); }
+    .cta-btn:active { transform: translateY(0); }
+
+    .footer { margin-top: 48px; padding: 24px; text-align: center; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; }
+    .footer a { color: var(--primary); text-decoration: none; }
+
+    /* Modal / Payment */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--bg-card); border-radius: var(--radius);
+      padding: 32px 24px; max-width: 420px; width: 100%;
+      text-align: center; box-shadow: var(--shadow); animation: modalIn 0.3s ease;
+      max-height: 90vh; overflow-y: auto;
+    }
+    @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+
+    .modal h3 { font-size: 1.2rem; margin-bottom: 4px; }
+    .modal .modal-subtitle { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px; }
+
+    /* Payment method tabs */
+    .payment-tabs { display: flex; gap: 8px; margin-bottom: 20px; justify-content: center; }
+    .payment-tab {
+      padding: 10px 18px; border-radius: 10px; border: 2px solid var(--border);
+      background: var(--bg); color: var(--text-muted); font-family: inherit;
+      font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+    }
+    .payment-tab.active { border-color: var(--primary); color: var(--primary); background: rgba(255,29,104,0.1); }
+    .payment-tab:hover { border-color: var(--primary); }
+
+    .payment-panel { display: none; text-align: left; }
+    .payment-panel.active { display: block; }
+
+    /* Card form */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+    .form-group input, .form-group select {
+      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); font-family: inherit; font-size: 0.9rem;
+      outline: none; transition: border 0.2s;
+    }
+    .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .pay-btn {
+      width: 100%; padding: 14px; border-radius: 12px; border: none;
+      background: var(--primary); color: white; font-family: inherit;
+      font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .pay-btn:hover { background: var(--primary-hover); }
+    .pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .close-btn {
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 0.85rem; margin-top: 16px; padding: 8px;
+    }
+
+    /* Pix */
+    .pix-box { text-align: center; }
+    .pix-qr-wrapper {
+      display: inline-block;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .pix-qr-wrapper img { width: 220px; height: 220px; display: block; border-radius: 8px; }
+    .pix-code-box { margin-top: 8px; }
+    .pix-code-text {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: monospace;
+      font-size: 0.7rem;
+      resize: none;
+      word-break: break-all;
+      margin-bottom: 8px;
+    }
+    .pix-box p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 8px; }
+    .pix-copy {
+      padding: 10px 20px; border-radius: 10px; border: 1px solid var(--primary);
+      background: transparent; color: var(--primary); font-family: inherit;
+      font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.85rem;
+    }
+    .pix-copy:hover { background: var(--primary); color: white; }
+
+    /* Boleto */
+    .boleto-box { text-align: center; }
+    .boleto-box a {
+      display: inline-block; padding: 12px 24px; border-radius: 12px;
+      background: var(--primary); color: white; text-decoration: none;
+      font-weight: 600; margin-top: 12px; transition: all 0.2s;
+    }
+    .boleto-box a:hover { background: var(--primary-hover); }
+
+    /* Loading */
+    .loading { display: flex; align-items: center; justify-content: center; padding: 30px; }
+    .spinner {
+      width: 36px; height: 36px; border: 3px solid var(--border);
+      border-top-color: var(--primary); border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success/Error states */
+    .status-box { text-align: center; padding: 20px 0; }
+    .status-box .icon { font-size: 3rem; margin-bottom: 12px; }
+    .status-box h4 { margin-bottom: 8px; }
+    .status-box p { color: var(--text-muted); font-size: 0.85rem; }
+
+    .error-msg { color: #ef4444; font-size: 0.8rem; text-align: center; margin-top: 8px; }
+
+    .fade-in { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+    @keyframes fadeIn { to { opacity: 1; } }
+    .slide-up { animation: slideUp 0.5s ease forwards; opacity: 0; transform: translateY(20px); }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 480px) {
+      .plans-grid { grid-template-columns: 1fr; }
+      .profile-banner { height: 120px; }
+      .gallery-grid { grid-template-columns: repeat(3,1fr); gap: 3px; }
+      .profile-stats { gap: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="#" class="navbar-brand">MeuPerfil</a>
+    <div class="navbar-actions">
+      <button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="fade-in">
+      <div class="profile-banner"></div>
+      <div class="profile-info">
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar"><img src="images/avatar.jpg" alt="Martina Olvr"/></div>
+          <div class="profile-stats">
+            <div class="stat"><div class="stat-value">1.157</div><div class="stat-label">Mídias</div></div>
+            <div class="stat"><div class="stat-value">322K</div><div class="stat-label">Likes</div></div>
+            <div class="stat"><div class="stat-value">660</div><div class="stat-label">Posts</div></div>
+          </div>
+        </div>
+        <div class="profile-name">Martina Olvr <svg style="vertical-align:middle;margin-left:4px" width="18" height="18" viewBox="0 0 24 24" fill="#1d9bf0"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z"/></svg></div>
+        <div class="profile-handle">@martinaolvr</div>
+        <div class="profile-bio">
+          Talvez você já me conheça de algum lugar…<br>
+          23 anos, gaúcha, DJ nas horas vagas e recém turbinada!<br>
+          +2 mil mídias por aqui… vem me conhecer melhor.
+        </div>
+        <div class="profile-social">
+          <a href="https://instagram.com/martinaolvr" class="social-icon" title="Instagram" target="_blank">IG</a>
+          <a href="https://twitter.com/martinaolvr" class="social-icon" title="Twitter" target="_blank">X</a>
+          <a href="https://tiktok.com/@martinaolvr" class="social-icon" title="TikTok" target="_blank">TK</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-up" style="animation-delay: 0.2s;">
+      <div class="section-title">Galeria — 699 fotos · 458 vídeos</div>
+      <div class="gallery-grid">
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">🎬</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">🎬</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">🎬</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+        <div class="gallery-item locked"><span class="placeholder-icon">📸</span></div>
+      </div>
+    </div>
+
+    <div class="slide-up" style="animation-delay: 0.35s;">
+      <div class="section-title">Planos de Assinatura</div>
+      <div class="plans-grid">
+        <div class="plan-card" onclick="openPayment('mensal')">
+          <div class="plan-name">Mensal</div>
+          <div class="plan-price" style="text-decoration:line-through;opacity:0.5;font-size:1rem">R$25<span>/mês</span></div>
+          <div class="plan-price" style="color:#22c55e">R$15<span>/mês</span></div>
+          <div class="plan-discount">40% OFF - Vem falar comigo</div>
+          <button class="plan-btn">Assinar</button>
+        </div>
+        <div class="plan-card popular" onclick="openPayment('trimestral')">
+          <div class="plan-name">Trimestral</div>
+          <div class="plan-price">R$60<span>/3 meses</span></div>
+          <div class="plan-discount">Economize 20%</div>
+          <button class="plan-btn">Assinar</button>
+        </div>
+        <div class="plan-card" onclick="openPayment('semestral')">
+          <div class="plan-name">Semestral</div>
+          <div class="plan-price">R$105<span>/6 meses</span></div>
+          <div class="plan-discount">Economize 30%</div>
+          <button class="plan-btn">Assinar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-section slide-up" style="animation-delay: 0.45s;">
+      <button class="cta-btn" onclick="openPayment('mensal')">🔥 Assinar agora — Acesso total ao conteúdo</button>
+    </div>
+
+    <div class="footer">
+      © 2025 <a href="#">Martina Olvr</a> · Criadora de conteúdo
+    </div>
+  </div>
+
+  <!-- PAYMENT MODAL -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <h3 id="modalTitle">Assinar plano</h3>
+      <div class="modal-subtitle" id="modalSubtitle"></div>
+
+      <!-- Tabs -->
+      <div class="payment-tabs">
+        <button class="payment-tab active" onclick="switchTab('pix')">Pix</button>
+        <button class="payment-tab" onclick="switchTab('card')">Cartão</button>
+        <button class="payment-tab" onclick="switchTab('boleto')">Boleto</button>
+      </div>
+
+      <!-- Pix Panel -->
+      <div class="payment-panel active" id="panel-pix">
+        <div class="pix-box" id="pixContent">
+          <div id="pixForm">
+            <div class="form-group">
+              <label>E-mail</label>
+              <input type="email" id="pixEmail" placeholder="seu@email.com"/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="pixFirstName" placeholder="Nome"/>
+              </div>
+              <div class="form-group">
+                <label>Sobrenome</label>
+                <input type="text" id="pixLastName" placeholder="Sobrenome"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>CPF</label>
+              <input type="text" id="pixDoc" placeholder="000.000.000-00" maxlength="14"/>
+            </div>
+            <div class="form-group">
+              <label>CEP</label>
+              <input type="text" id="pixZipCode" placeholder="00000-000" maxlength="9"/>
+            </div>
+            <div class="form-group">
+              <label>Rua</label>
+              <input type="text" id="pixStreet" placeholder="Nome da rua"/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Número</label>
+                <input type="text" id="pixStreetNumber" placeholder="123"/>
+              </div>
+              <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" id="pixCity" placeholder="Cidade"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <select id="pixState">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+              </select>
+            </div>
+            <button class="pay-btn" id="payPixBtn" onclick="payWithPix()">Gerar Pix</button>
+          </div>
+          <div class="loading" id="pixLoading" style="display:none"><div class="spinner"></div></div>
+          <div id="pixResult" style="display:none">
+            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:12px">Escaneie o QR Code abaixo</p>
+            <div class="pix-qr-wrapper">
+              <img id="pixQrCode" src="" alt="QR Code Pix"/>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.75rem;margin-top:12px;margin-bottom:4px">Ou copie o código Pix:</p>
+            <div class="pix-code-box">
+              <textarea id="pixCodeText" class="pix-code-text" readonly rows="3"></textarea>
+              <button class="pix-copy" onclick="copyPix()">Copiar código</button>
+            </div>
+            <p id="pixStatus" style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)"></p>
+          </div>
+          <div id="pixError" style="display:none;text-align:center;padding:20px 0">
+            <p style="color:#ef4444;font-size:0.85rem" id="pixErrorMsg"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Panel -->
+      <div class="payment-panel" id="panel-card">
+        <div id="cardForm">
+          <div class="form-group">
+            <label>E-mail</label>
+            <input type="email" id="cardEmail" placeholder="seu@email.com"/>
+          </div>
+          <div class="form-group">
+            <label>Número do cartão</label>
+            <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Validade</label>
+              <input type="text" id="cardExpiry" placeholder="MM/AA" maxlength="5"/>
+            </div>
+            <div class="form-group">
+              <label>CVV</label>
+              <input type="text" id="cardCvv" placeholder="000" maxlength="4"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Nome no cartão</label>
+            <input type="text" id="cardName" placeholder="Como está impresso"/>
+          </div>
+          <div class="form-group">
+            <label>CPF</label>
+            <input type="text" id="cardDoc" placeholder="000.000.000-00" maxlength="14"/>
+          </div>
+          <div class="form-group">
+            <label>Parcelas</label>
+            <select id="cardInstallments">
+              <option value="1">1x sem juros</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>CEP</label>
+            <input type="text" id="cardZipCode" placeholder="00000-000" maxlength="9"/>
+          </div>
+          <div class="form-group">
+            <label>Rua</label>
+            <input type="text" id="cardStreet" placeholder="Nome da rua"/>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Número</label>
+              <input type="text" id="cardStreetNumber" placeholder="123"/>
+            </div>
+            <div class="form-group">
+              <label>Cidade</label>
+              <input type="text" id="cardCity" placeholder="Cidade"/>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select id="cardState">
+              <option value="">Selecione</option>
+              <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+              <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+              <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+              <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+              <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+              <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+              <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+              <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+              <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+            </select>
+          </div>
+          <button class="pay-btn" id="payCardBtn" onclick="payWithCard()">Pagar com cartão</button>
+          <div class="error-msg" id="cardError"></div>
+        </div>
+      </div>
+
+      <!-- Boleto Panel -->
+      <div class="payment-panel" id="panel-boleto">
+        <div class="boleto-box" id="boletoContent">
+          <div id="boletoForm">
+            <div class="form-group">
+              <label>E-mail</label>
+              <input type="email" id="boletoEmail" placeholder="seu@email.com"/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nome</label>
+                <input type="text" id="boletoFirstName" placeholder="Nome"/>
+              </div>
+              <div class="form-group">
+                <label>Sobrenome</label>
+                <input type="text" id="boletoLastName" placeholder="Sobrenome"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>CPF</label>
+              <input type="text" id="boletoDoc" placeholder="000.000.000-00" maxlength="14"/>
+            </div>
+            <div class="form-group">
+              <label>CEP</label>
+              <input type="text" id="boletoZipCode" placeholder="00000-000" maxlength="9"/>
+            </div>
+            <div class="form-group">
+              <label>Rua</label>
+              <input type="text" id="boletoStreet" placeholder="Nome da rua"/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Número</label>
+                <input type="text" id="boletoStreetNumber" placeholder="123"/>
+              </div>
+              <div class="form-group">
+                <label>Cidade</label>
+                <input type="text" id="boletoCity" placeholder="Cidade"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Estado</label>
+              <select id="boletoState">
+                <option value="">Selecione</option>
+                <option value="AC">AC</option><option value="AL">AL</option><option value="AP">AP</option>
+                <option value="AM">AM</option><option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option><option value="GO">GO</option>
+                <option value="MA">MA</option><option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option><option value="PB">PB</option>
+                <option value="PR">PR</option><option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option><option value="RS">RS</option>
+                <option value="RO">RO</option><option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option><option value="TO">TO</option>
+              </select>
+            </div>
+            <button class="pay-btn" id="payBoletoBtn" onclick="payWithBoleto()">Gerar Boleto</button>
+          </div>
+          <div class="loading" id="boletoLoading" style="display:none"><div class="spinner"></div></div>
+          <div id="boletoResult" style="display:none">
+            <div id="boletoSuccess" style="display:none">
+              <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px">Clique abaixo para abrir o boleto</p>
+              <a id="boletoLink" href="#" target="_blank" class="pay-btn" style="display:inline-block;text-decoration:none">Abrir boleto</a>
+              <p id="boletoStatus" style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)"></p>
+            </div>
+            <div id="boletoErrorMsg" style="display:none">
+              <p style="color:#ef4444;font-size:0.85rem" id="boletoErrorText"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading overlay for card -->
+      <div id="cardLoading" style="display:none">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+
+      <!-- Success state -->
+      <div id="paymentSuccess" style="display:none">
+        <div class="status-box">
+          <div class="icon">✅</div>
+          <h4>Pagamento realizado!</h4>
+          <p>Seu acesso será liberado em breve.</p>
+        </div>
+      </div>
+
+      <button class="close-btn" onclick="closeModal()">Fechar</button>
+    </div>
+  </div>
+
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+  <script src="https://www.mercadopago.com/v2/security.js" view="checkout"></script>
+  <script>
+    // Theme
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const stored = localStorage.getItem('theme');
+    if (stored) { html.setAttribute('data-theme', stored); themeBtn.textContent = stored === 'dark' ? '🌙' : '☀️'; }
+    themeBtn.addEventListener('click', () => {
+      const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      themeBtn.textContent = next === 'dark' ? '🌙' : '☀️';
+    });
+
+    // Payment state
+    let currentPlan = null;
+    let currentOrderId = null;
+    let pixPaymentId = null;
+    let mpInstance = null;
+    let cardBrickController = null;
+
+    const PLAN_NAMES = {
+      mensal: { name: 'Mensal', price: 'R$15,00' },
+      trimestral: { name: 'Trimestral', price: 'R$60,00' },
+      semestral: { name: 'Semestral', price: 'R$105,00' }
+    };
+
+    const PLAN_ITEMS = {
+      mensal: { title: 'Assinatura Mensal - Martina Olvr', unit_price: '15.00' },
+      trimestral: { title: 'Assinatura Trimestral - Martina Olvr', unit_price: '60.00' },
+      semestral: { title: 'Assinatura Semestral - Martina Olvr', unit_price: '105.00' }
+    };
+
+    // Init MercadoPago
+    async function initMP() {
+      try {
+        const res = await fetch('/api/public-key');
+        const data = await res.json();
+        mpInstance = new MercadoPago(data.publicKey, { locale: 'pt-BR' });
+        console.log('MercadoPago inicializado');
+      } catch (err) {
+        console.error('Erro ao init MP:', err);
+      }
+    }
+
+    // Format card number
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('cardNumber').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+        e.target.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+      });
+      document.getElementById('cardExpiry').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+        if (v.length > 2) v = v.substring(0,2) + '/' + v.substring(2);
+        e.target.value = v;
+      });
+      document.getElementById('cardDoc').addEventListener('input', (e) => {
+        let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+        v = v.replace(/(\d{3})(?=\d)/g, '$1.').replace(/(\d{3})(\d{3})(?=\d)/g, '$1.$2');
+        if (v.length > 11) v = v.substring(0,11).replace(/-(\d{3})$/, '-$1');
+        e.target.value = v.length > 10 ? v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9) : v;
+      });
+
+      // CPF masks for Pix/Boleto
+      ['pixDoc', 'boletoDoc'].forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+          let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+          v = v.replace(/(\d{3})(?=\d)/g, '$1.').replace(/(\d{3})(\d{3})(?=\d)/g, '$1.$2');
+          if (v.length > 11) v = v.substring(0,11).replace(/-(\d{3})$/, '-$1');
+          e.target.value = v.length > 10 ? v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9) : v;
+        });
+      });
+
+      // CEP masks
+      ['pixZipCode', 'boletoZipCode', 'cardZipCode'].forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+          let v = e.target.value.replace(/\D/g, '').substring(0, 8);
+          if (v.length > 5) v = v.substring(0,5) + '-' + v.substring(5);
+          e.target.value = v;
+        });
+      });
+
+      initMP();
+    });
+
+    // Open payment modal
+    function openPayment(plan) {
+      currentPlan = plan;
+      const info = PLAN_NAMES[plan];
+      document.getElementById('modalTitle').textContent = `Plano ${info.name}`;
+      document.getElementById('modalSubtitle').textContent = info.price;
+      resetModal();
+      document.getElementById('modal').classList.add('active');
+      // Auto-select pix tab
+      switchTab('pix');
+    }
+
+    function resetModal() {
+      document.getElementById('pixResult').style.display = 'none';
+      document.getElementById('pixLoading').style.display = 'none';
+      document.getElementById('pixError').style.display = 'none';
+      document.getElementById('pixForm').style.display = 'block';
+      document.getElementById('pixCodeText').value = '';
+      document.getElementById('cardForm').style.display = 'block';
+      document.getElementById('cardLoading').style.display = 'none';
+      document.getElementById('cardError').textContent = '';
+      document.getElementById('paymentSuccess').style.display = 'none';
+      document.getElementById('boletoResult').style.display = 'none';
+      document.getElementById('boletoLoading').style.display = 'none';
+      document.getElementById('boletoSuccess').style.display = 'none';
+      document.getElementById('boletoErrorMsg').style.display = 'none';
+      document.getElementById('boletoForm').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    document.getElementById('modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Switch tabs
+    function switchTab(tab) {
+      document.querySelectorAll('.payment-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.payment-panel').forEach(p => p.classList.remove('active'));
+
+      if (tab === 'pix') {
+        document.querySelectorAll('.payment-tab')[0].classList.add('active');
+        document.getElementById('panel-pix').classList.add('active');
+      } else if (tab === 'card') {
+        document.querySelectorAll('.payment-tab')[1].classList.add('active');
+        document.getElementById('panel-card').classList.add('active');
+      } else if (tab === 'boleto') {
+        document.querySelectorAll('.payment-tab')[2].classList.add('active');
+        document.getElementById('panel-boleto').classList.add('active');
+      }
+    }
+
+    // Create order and handle payment
+    async function createOrderAndPay(method, payerData = {}) {
+      resetModal();
+      // Re-show the active panel's loading
+      if (method === 'pix') document.getElementById('pixLoading').style.display = 'flex';
+      if (method === 'boleto') document.getElementById('boletoLoading').style.display = 'flex';
+
+      try {
+        // Get Device ID for fraud prevention
+        const deviceId = window.MP_DEVICE_SESSION_ID || '';
+
+        const payload = {
+          plan: currentPlan,
+          paymentMethod: method === 'pix' ? 'pix' : 'boleto',
+          payerEmail: payerData.email || '',
+          payerFirstName: payerData.firstName || '',
+          payerLastName: payerData.lastName || '',
+          payerDoc: payerData.doc || '',
+          payerZipCode: payerData.zipCode || '',
+          payerStreet: payerData.street || '',
+          payerStreetNumber: payerData.streetNumber || '',
+          payerCity: payerData.city || '',
+          payerState: payerData.state || ''
+        };
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (deviceId) headers['X-meli-session-id'] = deviceId;
+
+        const res = await fetch('/api/create-order', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Erro ao criar pagamento');
+        }
+
+        currentOrderId = data.id;
+
+        if (method === 'pix' && data.detail) {
+          handlePixResult(data.detail);
+        } else if (method === 'boleto' && data.detail) {
+          handleBoletoResult(data.detail);
+        }
+      } catch (err) {
+        console.error('Erro:', err);
+        if (method === 'pix') {
+          document.getElementById('pixLoading').style.display = 'none';
+          document.getElementById('pixResult').style.display = 'none';
+          document.getElementById('pixError').style.display = 'block';
+          document.getElementById('pixErrorMsg').textContent = 'Erro ao gerar Pix: ' + err.message;
+        }
+        if (method === 'boleto') {
+          document.getElementById('boletoLoading').style.display = 'none';
+          document.getElementById('boletoResult').style.display = 'block';
+          document.getElementById('boletoSuccess').style.display = 'none';
+          document.getElementById('boletoErrorMsg').style.display = 'block';
+          document.getElementById('boletoErrorText').textContent = 'Erro ao gerar boleto: ' + err.message;
+        }
+      }
+    }
+
+    // Handle Pix
+    function handlePixResult(order) {
+      document.getElementById('pixLoading').style.display = 'none';
+      document.getElementById('pixResult').style.display = 'block';
+      document.getElementById('pixError').style.display = 'none';
+
+      // Extract payment data from nested structure
+      const payment = order.transactions && order.transactions.payments && order.transactions.payments[0];
+      const qrImg = payment && payment.payment_method && payment.payment_method.qr_code_base64;
+      const pixCopyPaste = payment && payment.payment_method && payment.payment_method.qr_code;
+
+      if (qrImg) {
+        const img = document.getElementById('pixQrCode');
+        img.src = 'data:image/png;base64,' + qrImg;
+        img.onerror = function() {
+          console.error('Erro ao carregar QR code base64');
+        };
+      }
+
+      if (pixCopyPaste) {
+        window._pixCopyPaste = pixCopyPaste;
+        document.getElementById('pixCodeText').value = pixCopyPaste;
+      }
+
+      document.getElementById('pixStatus').textContent = 'Status: Aguardando pagamento...';
+
+      // Start polling
+      pollOrderStatus(order.id, 'pix');
+    }
+
+    // Handle Boleto
+    function handleBoletoResult(order) {
+      document.getElementById('boletoLoading').style.display = 'none';
+      document.getElementById('boletoResult').style.display = 'block';
+
+      // Extract payment data from nested structure
+      const payment = order.transactions && order.transactions.payments && order.transactions.payments[0];
+      const ticketUrl = payment && payment.payment_method && payment.payment_method.ticket_url;
+
+      if (ticketUrl) {
+        document.getElementById('boletoSuccess').style.display = 'block';
+        document.getElementById('boletoErrorMsg').style.display = 'none';
+        document.getElementById('boletoLink').href = ticketUrl;
+        document.getElementById('boletoStatus').textContent = 'Status: Aguardando pagamento...';
+        pollOrderStatus(order.id, 'boleto');
+      } else {
+        document.getElementById('boletoSuccess').style.display = 'none';
+        document.getElementById('boletoErrorMsg').style.display = 'block';
+        document.getElementById('boletoErrorText').textContent = 'Boleto não disponível no sandbox. Use Pix ou cartão para testar.';
+      }
+    }
+
+    // Poll order status
+    function pollOrderStatus(orderId, method) {
+      const interval = setInterval(async () => {
+        try {
+          const res = await fetch('/api/order/' + orderId);
+          const data = await res.json();
+          if (data.status === 'processed' || data.status === 'approved') {
+            clearInterval(interval);
+            showSuccess();
+          } else if (data.status === 'failed' || data.status === 'canceled' || data.status === 'expired') {
+            clearInterval(interval);
+            if (method === 'pix') {
+              document.getElementById('pixStatus').textContent = 'Pagamento não realizado. Tente novamente.';
+            }
+            if (method === 'boleto') {
+              document.getElementById('boletoStatus').textContent = 'Pagamento não realizado. Tente novamente.';
+            }
+          }
+        } catch (err) {
+          console.error('Erro ao consultar:', err);
+        }
+      }, 5000);
+
+      // Stop after 10 minutes
+      setTimeout(() => clearInterval(interval), 600000);
+    }
+
+    function showSuccess() {
+      document.getElementById('pixResult').style.display = 'none';
+      document.getElementById('pixLoading').style.display = 'none';
+      document.getElementById('cardForm').style.display = 'none';
+      document.getElementById('cardLoading').style.display = 'none';
+      document.getElementById('boletoResult').style.display = 'none';
+      document.getElementById('boletoLoading').style.display = 'none';
+      document.getElementById('paymentSuccess').style.display = 'block';
+    }
+
+    // Pay with card
+    async function payWithCard() {
+      const email = document.getElementById('cardEmail').value.trim();
+      const number = document.getElementById('cardNumber').value.replace(/\s/g, '');
+      const expiry = document.getElementById('cardExpiry').value;
+      const cvv = document.getElementById('cardCvv').value;
+      const name = document.getElementById('cardName').value.trim();
+      const doc = document.getElementById('cardDoc').value.replace(/\D/g, '');
+      const installments = document.getElementById('cardInstallments').value;
+      const zipCode = document.getElementById('cardZipCode').value.trim();
+      const street = document.getElementById('cardStreet').value.trim();
+      const streetNumber = document.getElementById('cardStreetNumber').value.trim();
+      const city = document.getElementById('cardCity').value.trim();
+      const state = document.getElementById('cardState').value;
+
+      // Validation
+      if (!email || !number || !expiry || !cvv || !name || !doc) {
+        document.getElementById('cardError').textContent = 'Preencha todos os campos';
+        return;
+      }
+
+      if (number.length < 13 || number.length > 19) {
+        document.getElementById('cardError').textContent = 'Número do cartão inválido';
+        return;
+      }
+
+      document.getElementById('cardError').textContent = '';
+      document.getElementById('cardForm').style.display = 'none';
+      document.getElementById('cardLoading').style.display = 'block';
+
+      try {
+        // Tokenize card via MercadoPago
+        const expParts = expiry.split('/');
+        const tokenData = {
+          cardNumber: number,
+          cardholderName: name,
+          identificationType: 'CPF',
+          identificationNumber: doc,
+          expirationMonth: parseInt(expParts[0]),
+          expirationYear: parseInt('20' + expParts[1]),
+          securityCode: cvv
+        };
+
+        const token = await mpInstance.fields.createCardToken(tokenData);
+
+        // Split name into first/last
+        const nameParts = name.split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || firstName;
+
+        // Get Device ID for fraud prevention
+        const deviceId = window.MP_DEVICE_SESSION_ID || '';
+
+        const headers = { 'Content-Type': 'application/json' };
+        if (deviceId) headers['X-meli-session-id'] = deviceId;
+
+        // Create order on backend
+        const res = await fetch('/api/create-order', {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            plan: currentPlan,
+            paymentMethod: 'credit_card',
+            cardToken: token.id,
+            cardNumber: number,
+            installments: parseInt(installments),
+            payerEmail: email,
+            payerFirstName: firstName,
+            payerLastName: lastName,
+            payerDoc: doc,
+            payerZipCode: zipCode,
+            payerStreet: street,
+            payerStreetNumber: streetNumber,
+            payerCity: city,
+            payerState: state
+          })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Erro ao processar pagamento');
+        }
+
+        if (data.status === 'processed' || data.status === 'approved') {
+          showSuccess();
+        } else if (data.status === 'action_required') {
+          // 3DS or other action needed
+          document.getElementById('cardForm').style.display = 'block';
+          document.getElementById('cardError').textContent = 'Ação adicional necessária. Verifique seu pagamento.';
+        } else {
+          document.getElementById('cardForm').style.display = 'block';
+          document.getElementById('cardError').textContent = 'Status: ' + data.status + '. Tente novamente.';
+        }
+      } catch (err) {
+        console.error('Erro cartão:', err);
+        document.getElementById('cardForm').style.display = 'block';
+        document.getElementById('cardError').textContent = err.message || 'Erro ao processar cartão';
+      }
+
+      document.getElementById('cardLoading').style.display = 'none';
+    }
+
+    // Pay with Pix
+    async function payWithPix() {
+      const email = document.getElementById('pixEmail').value.trim();
+      const firstName = document.getElementById('pixFirstName').value.trim();
+      const lastName = document.getElementById('pixLastName').value.trim();
+      const doc = document.getElementById('pixDoc').value.replace(/\D/g, '');
+      const zipCode = document.getElementById('pixZipCode').value.trim();
+      const street = document.getElementById('pixStreet').value.trim();
+      const streetNumber = document.getElementById('pixStreetNumber').value.trim();
+      const city = document.getElementById('pixCity').value.trim();
+      const state = document.getElementById('pixState').value;
+
+      if (!email || !firstName || !doc) {
+        document.getElementById('pixError').style.display = 'block';
+        document.getElementById('pixErrorMsg').textContent = 'Preencha e-mail, nome e CPF';
+        return;
+      }
+
+      document.getElementById('pixForm').style.display = 'none';
+      document.getElementById('pixLoading').style.display = 'flex';
+      document.getElementById('pixError').style.display = 'none';
+
+      await createOrderAndPay('pix', { email, firstName, lastName, doc, zipCode, street, streetNumber, city, state });
+    }
+
+    // Pay with Boleto
+    async function payWithBoleto() {
+      const email = document.getElementById('boletoEmail').value.trim();
+      const firstName = document.getElementById('boletoFirstName').value.trim();
+      const lastName = document.getElementById('boletoLastName').value.trim();
+      const doc = document.getElementById('boletoDoc').value.replace(/\D/g, '');
+      const zipCode = document.getElementById('boletoZipCode').value.trim();
+      const street = document.getElementById('boletoStreet').value.trim();
+      const streetNumber = document.getElementById('boletoStreetNumber').value.trim();
+      const city = document.getElementById('boletoCity').value.trim();
+      const state = document.getElementById('boletoState').value;
+
+      if (!email || !firstName || !doc) {
+        document.getElementById('boletoErrorMsg').style.display = 'block';
+        document.getElementById('boletoErrorText').textContent = 'Preencha e-mail, nome e CPF';
+        return;
+      }
+
+      document.getElementById('boletoForm').style.display = 'none';
+      document.getElementById('boletoLoading').style.display = 'flex';
+      document.getElementById('boletoErrorMsg').style.display = 'none';
+
+      await createOrderAndPay('boleto', { email, firstName, lastName, doc, zipCode, street, streetNumber, city, state });
+    }
+
+    // Copy pix
+    function copyPix() {
+      const code = window._pixCopyPaste;
+      if (!code) return;
+
+      // Try modern clipboard API first, fallback to execCommand
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          document.querySelector('.pix-copy').textContent = '✓ Copiado!';
+          setTimeout(() => document.querySelector('.pix-copy').textContent = 'Copiar código', 2000);
+        }).catch(() => fallbackCopy(code));
+      } else {
+        fallbackCopy(code);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        document.querySelector('.pix-copy').textContent = '✓ Copiado!';
+        setTimeout(() => document.querySelector('.pix-copy').textContent = 'Copiar código', 2000);
+      } catch (e) {
+        alert('Copie manualmente o código acima');
+      }
+      document.body.removeChild(ta);
+    }
+
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.style.animationPlayState = 'running';
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.slide-up').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

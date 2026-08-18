@@ -1,0 +1,17 @@
+{
+  "name": "martina-olvr-pagamento",
+  "version": "1.0.0",
+  "description": "Integração Mercado Pago - Martina Olvr",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "mercadopago": "^2.0.0",
+    "dotenv": "^16.0.0",
+    "uuid": "^9.0.0"
+  }
+}

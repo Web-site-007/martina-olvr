@@ -1,0 +1,217 @@
+/**
+ * privacy.css — utilitários legacy que ainda têm consumidor no SPA.
+ *
+ * Foundation (Poppins @font-face, :root CSS vars, html/body base font,
+ * anchor/p/code/pre/var) consolidada em `app/globals.css`. As ~900 LOC
+ * removidas neste audit cobriam features Razor que (a) foram migradas
+ * pro React e nunca mais usam as classes legacy, ou (b) vivem dentro
+ * de shadow root de Web Components Vue e o CSS global não as alcança.
+ *
+ * Auditoria: `scripts/audit-privacy-css.ts` (re-rodar antes de adicionar
+ * rule nova — manter este arquivo enxuto é objetivo declarado).
+ *
+ * Compatibilidade: vendor prefixes (-webkit-, -ms-, -moz-) preservados
+ * onde a fonte original do Razor tinha. Features modernas (`:has()`,
+ * container queries) só foram introduzidas em browsers que já cobrem
+ * nosso target — checar caniuse antes de adicionar regra nova.
+ */
+
+/* ─── Overrides cromáticos Bootstrap (legado) ────────────────────────── */
+
+/* Cor primária Privacy aplicada em <a> e .text-primary do Bootstrap. */
+.text-primary {
+    color: #fe754f !important;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+a {
+    color: #fe754f !important;
+}
+
+a:hover {
+    color: #f68d3d !important;
+    text-decoration: none;
+}
+
+a.text-primary:focus,
+a.text-primary:hover {
+    color: #fe754f !important;
+}
+
+/* ─── Filter buttons (Profile + Collections + Header) ──────────────── */
+
+.filter-button {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: var(--bs-text-color) !important;
+    background-color: transparent;
+    line-height: 1.5rem;
+    text-transform: uppercase;
+    font-weight: 400;
+    padding: 8px 12px;
+    border-radius: 100px;
+    transition:
+        background-color 0.1s,
+        color 0.1s;
+    user-select: none;
+}
+
+.filter-button.selected {
+    font-size: 16px;
+    color: var(--color-privacy) !important;
+    background-color: var(--navigation-link-bg);
+    pointer-events: none;
+}
+
+.filter-button:hover {
+    background-color: transparent;
+    color: var(--bs-text-color) !important;
+}
+
+@media (max-width: 769px) {
+    .filter-button {
+        font-size: 12px;
+    }
+    /*
+     * Light peach do mobile vaza no dark mode. Override scoped por theme
+     * em globals.css trata o caso `html.dark-mode`/`html[data-theme="dark"]`.
+     */
+    .filter-button.selected {
+        font-size: 12px !important;
+        background: #fef3f1 !important;
+    }
+}
+
+/* ─── Footer estático (age-restriction) ──────────────────────────────── */
+
+.footer-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    padding-top: 8px;
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #a8abb2;
+}
+
+/* ─── Back button reutilizável ───────────────────────────────────────── */
+
+.default-back-button {
+    position: absolute;
+    left: 16px;
+    width: 24px;
+    cursor: pointer;
+}
+
+/* ─── Utility minimal ────────────────────────────────────────────────── */
+
+.font-13 {
+    font-size: 13px;
+}
+
+/* ─── Profile body + tabs mosaic ────────────────────────────────────── */
+/* IDs vêm do `ProfileShell.tsx` (Razor preservou nomenclatura por
+   compatibilidade visual). */
+
+#bodyPosts {
+    overflow: hidden;
+}
+
+#bodyPostsMosaico {
+    margin: 0 1rem;
+    margin-top: 12px;
+    padding: 0 !important;
+    background-color: var(--card-bg-1);
+    border-radius: 24px;
+    border: 1px solid var(--bs-border-color);
+}
+
+.tabs-group-post {
+    padding-top: 12px;
+}
+
+#bodyPostsMosaico .filter-button {
+    text-transform: none;
+    font-size: 16px;
+    background: none !important;
+    color: var(--bs-text-color) !important;
+}
+
+#bodyPostsMosaico .filter-button.selected {
+    font-size: 16px !important;
+    background: var(--navigation-link-bg) !important;
+    color: var(--color-privacy) !important;
+}
+
+#bodyPostsMosaico .parent {
+    padding: 0 12px;
+    padding-bottom: 16px;
+    margin: 0 !important;
+}
+
+#bodyPostsMosaico .column {
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid white;
+    position: relative;
+}
+
+/* Pseudo-element força aspect-ratio 1:1 nas tiles do mosaico. */
+#bodyPostsMosaico .column:before {
+    content: "";
+    float: left;
+    padding-top: 100%;
+}
+
+/* ─── Float menu + privacy-header (WC navigation) ────────────────────── */
+/* IDs consumidos pelos WCs `privacy-web-float-menu` (light DOM) e nosso
+   `AuthHeader.tsx`. `html.fullscreen-active` é setado pelo
+   `fullscreenManager.js` quando uma WC entra em fullscreen (publisher,
+   media viewer). */
+
+#float-menu--wrapper {
+    position: relative;
+    z-index: 10;
+    padding-bottom: constant(safe-area-inset-bottom, 0);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+@media (max-width: 800px) {
+    html.fullscreen-active #float-menu--wrapper {
+        display: none !important;
+    }
+}
+
+@media (min-width: 800px) {
+    html.fullscreen-active #float-menu--wrapper,
+    html.fullscreen-active #privacy-header {
+        z-index: 0 !important;
+    }
+}
+
+/* ─── Element Plus popup lock (body scroll lock) ─────────────────────── */
+/* Element Plus seta `.el-popup-parent--hidden` no <body> quando algum
+   `<el-dialog>` dentro de WC abre. Travamos scroll do body inteiro pra
+   evitar dois scrollbars empilhados (modal + página). */
+
+body:has(.el-popup-parent--hidden) {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+}
+
+/* ─── Theme overrides ────────────────────────────────────────────────── */
+/* `.navbar` (PublicHeader.tsx) usa o bg do body. globals.css carrega o
+   `html, body { background: var(--bs-body-bg) }` base; aqui só o navbar. */
+
+.navbar {
+    background-color: var(--bs-body-bg);
+}
