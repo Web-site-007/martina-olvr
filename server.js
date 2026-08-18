@@ -16,6 +16,68 @@ const client = new MercadoPagoConfig({
 });
 const orderClient = new Order(client);
 
+// Finassets Config
+const FINASSETS_API_URL = 'https://www.finassets.io/api';
+
+// Sign request for Finassets API (HMAC-SHA512)
+function signFinassetsRequest(requestUuid, method, uriPart) {
+  const secretKey = process.env.FINASSETS_SECRET_KEY;
+  if (!secretKey) throw new Error('FINASSETS_SECRET_KEY não configurado');
+  const message = requestUuid + method + uriPart;
+  return crypto.createHmac('sha512', secretKey).update(message).digest('base64');
+}
+
+// Generic Finassets API request
+async function finassetsRequest(method, path, body = null) {
+  return new Promise((resolve, reject) => {
+    const { v4: uuidv4 } = require('uuid');
+    const requestUuid = uuidv4();
+    const signature = signFinassetsRequest(requestUuid, method, path);
+
+    const url = new URL(path, FINASSETS_API_URL);
+    const data = body ? JSON.stringify(body) : null;
+
+    const headers = {
+      'API-Key': process.env.FINASSETS_API_KEY,
+      'Api-Signature': signature,
+      'Content-Type': 'application/json',
+    };
+
+    const req = https.request({
+      hostname: url.hostname,
+      port: 443,
+      path: url.pathname + '?request_uuid=' + requestUuid,
+      method,
+      headers
+    }, (res) => {
+      let responseBody = '';
+      res.on('data', c => responseBody += c);
+      res.on('end', () => {
+        try { resolve(JSON.parse(responseBody)); }
+        catch { reject(new Error('Resposta inválida do Finassets')); }
+      });
+    });
+    req.on('error', reject);
+    if (data) req.write(data);
+    req.end();
+  });
+}
+
+// Validate Finassets webhook signature (HMAC-SHA512)
+function validateFinassetsWebhook(req, body) {
+  const signature = req.headers['finassets-signature'];
+  if (!signature) return false;
+
+  const secret = process.env.FINASSETS_SECRET_KEY;
+  if (!secret) {
+    console.warn('FINASSETS_SECRET_KEY não configurado — pulando validação');
+    return true;
+  }
+
+  const hmac = crypto.createHmac('sha512', secret).update(JSON.stringify(body)).digest('base64');
+  return hmac === signature;
+}
+
 // Raw HTTP helper for Orders API (bypasses SDK validation for bank_transfer)
 async function mpPost(path, body, idempotencyKey, extraHeaders = {}) {
   return new Promise((resolve, reject) => {
@@ -229,6 +291,79 @@ async function handleCreateOrder(req, res) {
   }
 }
 
+// Create Checkout (Finassets)
+async function handleCreateCheckout(req, res) {
+  const body = await parseBody(req);
+  const { plan } = body;
+
+  if (!plan || !PLANS[plan]) {
+    return sendJSON(res, 400, { error: 'Plano inválido' });
+  }
+
+  const planData = PLANS[plan];
+
+  try {
+    const checkoutBody = {
+      key: process.env.FINASSETS_PROJECT_KEY,
+      items: [{
+        name: planData.name,
+        quantity: 1,
+        price: planData.price,
+        image_url: SITE_URL + '/images/avatar.jpg'
+      }],
+      orderId: `martina-${plan}-${Date.now()}`
+    };
+
+    const result = await finassetsRequest('POST', '/v1/checkout', checkoutBody);
+
+    if (!result.url) {
+      throw new Error(result.message || 'Erro ao criar checkout');
+    }
+
+    sendJSON(res, 200, {
+      url: result.url,
+      orderId: checkoutBody.orderId,
+      plan: plan
+    });
+  } catch (err) {
+    console.error('Erro ao criar checkout Finassets:', err);
+    sendJSON(res, 500, { error: err.message || 'Erro interno' });
+  }
+}
+
+// Get Checkout Status (Finassets)
+async function handleGetCheckout(req, res, checkoutId) {
+  try {
+    const result = await finassetsRequest('GET', `/v1/checkout/${checkoutId}`);
+    sendJSON(res, 200, result);
+  } catch (err) {
+    console.error('Erro ao consultar checkout Finassets:', err);
+    sendJSON(res, 500, { error: err.message || 'Erro interno' });
+  }
+}
+
+// Finassets Webhook
+async function handleFinassetsWebhook(req, res) {
+  const body = await parseBody(req);
+  console.log('Finassets webhook recebido:', JSON.stringify(body, null, 2));
+
+  // Validate signature
+  if (!validateFinassetsWebhook(req, body)) {
+    console.warn('Finassets webhook: assinatura inválida!');
+    sendJSON(res, 401, { error: 'Invalid signature' });
+    return;
+  }
+
+  // Process payment
+  const status = body.checkout && body.checkout.status;
+  const orderId = body.checkout && body.checkout.orderId;
+  console.log(`Finassets webhook: Order ${orderId} — status: ${status}`);
+
+  // Must respond 200 within 30 seconds
+  res.writeHead(200, { 'Content-Type': 'application/json' });
+  res.end(JSON.stringify({ received: true }));
+}
+
 // Get Order Status
 async function handleGetOrder(req, res, orderId) {
   try {
@@ -341,6 +476,9 @@ const handler = async (req, res) => {
   if (url === '/api/create-order' && req.method === 'POST') {
     return handleCreateOrder(req, res);
   }
+  if (url === '/api/create-checkout' && req.method === 'POST') {
+    return handleCreateCheckout(req, res);
+  }
   if (url === '/api/public-key' && req.method === 'GET') {
     return handlePublicKey(req, res);
   }
@@ -348,8 +486,15 @@ const handler = async (req, res) => {
     const orderId = url.split('/api/order/')[1];
     return handleGetOrder(req, res, orderId);
   }
+  if (url.startsWith('/api/checkout/') && req.method === 'GET') {
+    const checkoutId = url.split('/api/checkout/')[1];
+    return handleGetCheckout(req, res, checkoutId);
+  }
   if (url === '/webhooks/mercadopago' && req.method === 'POST') {
     return handleWebhook(req, res);
+  }
+  if (url === '/webhooks/finassets' && req.method === 'POST') {
+    return handleFinassetsWebhook(req, res);
   }
   // OAuth endpoints (required for quality measurement)
   if (url === '/oauth/authorize' && req.method === 'GET') {

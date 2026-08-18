@@ -1,16 +1,16 @@
 # INSTRUÇÃO AUTOMÁTICA
 Ao iniciar cada sessão, LEIA este AGENTS.md inteiro. Ao FINALIZAR qualquer tarefa ou conversa, ATUALIZE este arquivo com tudo que foi feito, decidido, corrigido ou descoberto — SEMPRE, sem o usuário precisar pedir. Salve tudo: erros encontrados, soluções aplicadas, configurações mudadas, o que funciona e o que não funciona.
 
-# Projeto: Integração Mercado Pago
+# Projeto: Integração Mercado Pago + Finassets (Crypto)
 
 ## O que é
-Página de perfil (Martina Olvr) com planos de assinatura que precisa de integração real com Mercado Pago para pagamentos.
+Página de perfil (Martina Olvr) com planos de assinatura que precisa de integração real com Mercado Pago para pagamentos (Pix, Cartão, Boleto) E Finassets para pagamentos com criptomoedas.
 
 ## Arquivos do projeto
 - `index.html` — Página principal com layout dos planos (Mensal R$15, Trimestral R$60, Semestral R$105)
 - `server.js` — Servidor Node.js na porta 8080 (servidor arquivos estáticos + API)
 - `package.json` — Dependências: mercadopago, dotenv, uuid
-- `.env` — Credenciais (Access Token + Public Key)
+- `.env` — Credenciais (Access Token + Public Key + Finassets keys)
 
 ## Como rodar
 ```bash
@@ -474,3 +474,67 @@ async function mpPost(path, body, idempotencyKey, extraHeaders = {}) {
 - Ativar/Desativar meios de pagamento — Painel do MP
 - OAuth — Só para plataformas multi-vendedor
 - Integrator ID — Só para desenvolvedores certificados do Programa de Parcerias
+
+---
+
+# Integração Finassets (Crypto)
+
+## O que é
+Gateway de pagamento com criptomoedas (USDT, BTC, ETH e mais de 70 moedas) com taxas a partir de 0.20%.
+
+## Por que escolhemos
+- **Taxa mais baixa do mercado**: 0.20% a 0.40% (vs 7% da DeFlow, 1% de outras)
+- **Nome não aparece**: O comprador vê apenas endereço de carteira, não nome pessoal
+- **Stablecoin support**: Aceita USDT (sem volatilidade)
+- **API simples**: Criar checkout → redirecionar → webhook confirma
+
+## Documentação Finassets
+
+### API
+- Base URL: `https://www.finassets.io/api`
+- Docs: `https://www.finassets.io/api/doc`
+- Sandbox: `https://stage.finassets.io/api` (basic auth, contato suporte)
+
+### Autenticação
+- Header `API-Key`: Chave da API
+- Header `Api-Signature`: `Base64Encode(HMAC-SHA512(request_uuid + request_type + request_uri_part, secret_key))`
+- Query param `request_uuid`: UUID único por requisição
+
+### Fluxo Checkout (implementado)
+1. Frontend clica "Pagar com Crypto"
+2. Backend cria checkout via `POST /v1/checkout` com project key + items
+3. Response retorna URL: `https://pay.finassets.io/checkout/xxx`
+4. Usuário é redirecionado para página de pagamento
+5. Paga com crypto (USDT, BTC, ETH, etc)
+6. Finassets envia webhook quando pagamento confirma
+7. Backend ativa assinatura
+
+### Endpoints implementados
+- `POST /api/create-checkout` — Cria checkout no Finassets
+- `GET /api/checkout/:id` — Consulta status do checkout
+- `POST /webhooks/finassets` — Recebe notificações webhook
+
+### Variáveis de ambiente necessárias
+```
+FINASSETS_API_KEY=Sua API Key
+FINASSETS_SECRET_KEY=Sua Secret Key
+FINASSETS_PROJECT_KEY=Project Key do tipo Checkout
+```
+
+### Webhook
+- Header: `Finassets-Signature` (HMAC-SHA512 do body)
+- Retry: 1, 5, 10, 20, 40, 60, 120, 240, 360, 480, 600 minutos
+- Resposta obrigatória: HTTP 200 em 30 segundos
+
+### Configuração no painel Finassets
+1. Criar conta em `https://www.finassets.io/en/account/register/`
+2. Ir em **Settings > Integration & API Docs**
+3. Criar API Key (salvar secret!)
+4. Criar Project do tipo **Checkout** em **Payment Gateway > Projects**
+5. Configurar Webhook URL em **Settings > Integration & API Docs**
+6. Copiar Project Key e adicionar ao `.env`
+
+### Limitações
+- Sandbox requer contato com suporte (basic auth)
+- API key tem rate limit de 100 req/min
+- Checkout expira conforme configuração do projeto
