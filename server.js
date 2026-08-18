@@ -154,8 +154,15 @@ async function handleCreateOrder(req, res) {
     const statementDescriptor = (brandNames[brand] || 'MASTER').substring(0, 12);
 
     // Build payer object
+    // In sandbox, email must end with @testuser.com
+    const rawEmail = payerEmail || 'testuser@testuser.com';
+    const isSandbox = process.env.MP_ACCESS_TOKEN && !process.env.MP_ACCESS_TOKEN.includes('production');
+    const payerEmailFinal = isSandbox && !rawEmail.endsWith('@testuser.com')
+      ? rawEmail.split('@')[0] + '@testuser.com'
+      : rawEmail;
+
     const payer = {
-      email: payerEmail || 'testuser@testuser.com',
+      email: payerEmailFinal,
       entity_type: 'individual'
     };
     if (payerFirstName) payer.first_name = payerFirstName;
