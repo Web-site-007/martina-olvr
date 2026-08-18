@@ -381,7 +381,7 @@
     </div>
 
     <div class="footer">
-      © 2025 <a href="#">Martina Olvr</a> · Criadora de conteúdo
+      © 2026 <a href="#">Martina Olvr</a> · Criadora de conteúdo
     </div>
   </div>
 
@@ -821,6 +821,7 @@
           document.getElementById('pixLoading').style.display = 'none';
           document.getElementById('pixResult').style.display = 'none';
           document.getElementById('pixError').style.display = 'block';
+          document.getElementById('pixForm').style.display = 'block';
           document.getElementById('pixErrorMsg').textContent = 'Erro ao gerar Pix: ' + err.message;
         }
         if (method === 'boleto') {
@@ -828,6 +829,7 @@
           document.getElementById('boletoResult').style.display = 'block';
           document.getElementById('boletoSuccess').style.display = 'none';
           document.getElementById('boletoErrorMsg').style.display = 'block';
+          document.getElementById('boletoForm').style.display = 'block';
           document.getElementById('boletoErrorText').textContent = 'Erro ao gerar boleto: ' + err.message;
         }
       }
@@ -940,6 +942,11 @@
       // Validation
       if (!email || !number || !expiry || !cvv || !name || !doc) {
         document.getElementById('cardError').textContent = 'Preencha todos os campos';
+        return;
+      }
+
+      if (!zipCode || !street || !streetNumber || !city || !state) {
+        document.getElementById('cardError').textContent = 'Preencha o endereço completo';
         return;
       }
 

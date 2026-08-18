@@ -34,10 +34,10 @@ async function mpPost(path, body, idempotencyKey, extraHeaders = {}) {
       method: 'POST',
       headers
     }, (res) => {
-      let body = '';
-      res.on('data', c => body += c);
+      let responseBody = '';
+      res.on('data', c => responseBody += c);
       res.on('end', () => {
-        try { resolve(JSON.parse(body)); }
+        try { resolve(JSON.parse(responseBody)); }
         catch { reject(new Error('Resposta inválida do MP')); }
       });
     });
@@ -79,10 +79,11 @@ const PLANS = {
 function detectCardBrand(number) {
   const n = number.replace(/\D/g, '');
   if (/^4/.test(n)) return 'visa';
-  if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'master';
-  if (/^6(?:011|5)/.test(n)) return 'master'; // Discover ( usa rede master no MP)
-  if (/^(4011|4312|4573|4574|5041|5066|5067|6277|6362|6504|6505|6516)/.test(n)) return 'elo';
   if (/^3[47]/.test(n)) return 'amex';
+  // Elo: check BEFORE mastercard because 5041/5066/5067 start with 5x
+  if (/^(4011|4312|4573|4574|5041|5066|5067|6277|6362|6504|6505|6516)/.test(n)) return 'elo';
+  if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'master';
+  if (/^6(?:011|5)/.test(n)) return 'master'; // Discover (usa rede master no MP)
   return 'master'; // fallback
 }
 
@@ -363,6 +364,14 @@ const handler = async (req, res) => {
   // Static files
   if (url === '/') url = '/index.html';
   const filePath = path.join(__dirname, url);
+
+  // Prevent path traversal
+  if (!filePath.startsWith(__dirname)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('403 Forbidden');
+    return;
+  }
+
   const ext = path.extname(filePath);
   const contentType = MIME[ext] || 'application/octet-stream';
 
