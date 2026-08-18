@@ -170,6 +170,9 @@ async function handleCreateOrder(req, res) {
       if (payerState) payer.address.state = payerState;
     }
 
+    // Get client IP for fraud prevention
+    const clientIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || '';
+
     const orderBody = {
       type: 'online',
       processing_mode: 'automatic',
@@ -179,7 +182,8 @@ async function handleCreateOrder(req, res) {
       external_reference: `martina-${plan}-${Date.now()}`,
       payer,
       additional_info: {
-        'payer.registration_date': new Date().toISOString()
+        'payer.registration_date': new Date().toISOString(),
+        ...(clientIp ? { 'payer.ip_address': clientIp } : {})
       },
       transactions: {
         payments: [{

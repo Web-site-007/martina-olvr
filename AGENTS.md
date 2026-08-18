@@ -164,6 +164,11 @@ As notificações Webhooks permitem ao Mercado Pago enviar informações em **te
 - Amex: começa com 3[47]
 - Fallback: master
 
+## GitHub
+- Repositório: https://github.com/Web-site-007/martina-olvr
+- Branch: main
+- Usuário: Web-site-007
+
 ## Status do projeto
 - [x] Documentação Mercado Pago estudada
 - [x] Credenciais de teste recebidas (Access Token + Public Key)
