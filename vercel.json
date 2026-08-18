@@ -18,6 +18,9 @@
     {
       "src": "/oauth/(.*)",
       "dest": "server.js"
+    },
+    {
+      "handle": "filesystem"
     }
   ]
 }
