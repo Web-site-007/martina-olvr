@@ -214,7 +214,7 @@ Leia `/public/.env` no início de cada sessão pra acessar:
 - [x] Configurar variáveis de ambiente no Vercel (MP_ACCESS_TOKEN, MP_PUBLIC_KEY, MP_WEBHOOK_SECRET)
 - [x] Configurar webhook no painel Mercado Pago (sandbox)
 - [x] Adicionar endpoints OAuth (/oauth/authorize, /oauth/callback) para qualidade MP
-- [ ] Testar pagamento Pix em sandbox (pendente — usuário vai tentar pagar via Santander)
+- [ ] Testar pagamento Pix em produção
 - [ ] Confirmar que webhook dispara ao receber pagamento
 - [ ] Medir qualidade MP novamente (meta: 100/100)
 - [ ] Gerar credenciais de produção no Mercado Pago
