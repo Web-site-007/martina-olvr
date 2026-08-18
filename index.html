@@ -693,20 +693,13 @@
         if (v.length > 2) v = v.substring(0,2) + '/' + v.substring(2);
         e.target.value = v;
       });
-      document.getElementById('cardDoc').addEventListener('input', (e) => {
-        let v = e.target.value.replace(/\D/g, '').substring(0, 11);
-        v = v.replace(/(\d{3})(?=\d)/g, '$1.').replace(/(\d{3})(\d{3})(?=\d)/g, '$1.$2');
-        if (v.length > 11) v = v.substring(0,11).replace(/-(\d{3})$/, '-$1');
-        e.target.value = v.length > 10 ? v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9) : v;
-      });
-
-      // CPF masks for Pix/Boleto
-      ['pixDoc', 'boletoDoc'].forEach(id => {
+      ['cardDoc', 'pixDoc', 'boletoDoc'].forEach(id => {
         document.getElementById(id).addEventListener('input', (e) => {
           let v = e.target.value.replace(/\D/g, '').substring(0, 11);
-          v = v.replace(/(\d{3})(?=\d)/g, '$1.').replace(/(\d{3})(\d{3})(?=\d)/g, '$1.$2');
-          if (v.length > 11) v = v.substring(0,11).replace(/-(\d{3})$/, '-$1');
-          e.target.value = v.length > 10 ? v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9) : v;
+          if (v.length > 9) v = v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6,9) + '-' + v.substring(9);
+          else if (v.length > 6) v = v.substring(0,3) + '.' + v.substring(3,6) + '.' + v.substring(6);
+          else if (v.length > 3) v = v.substring(0,3) + '.' + v.substring(3);
+          e.target.value = v;
         });
       });
 
