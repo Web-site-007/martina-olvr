@@ -357,6 +357,15 @@ const handler = async (req, res) => {
   if (url === '/webhooks/mercadopago' && req.method === 'POST') {
     return handleWebhook(req, res);
   }
+  // OAuth endpoints (required for quality measurement)
+  if (url === '/oauth/authorize' && req.method === 'GET') {
+    res.writeHead(302, { 'Location': `https://www.mercadopago.com.br/authorization?client_id=${process.env.MP_APP_ID || ''}&response_type=code&platform_id=mp` });
+    return res.end();
+  }
+  if (url === '/oauth/callback' && req.method === 'GET') {
+    sendJSON(res, 200, { status: 'ok', message: 'OAuth callback received' });
+    return;
+  }
 
   // Static files
   if (url === '/') url = '/index.html';
