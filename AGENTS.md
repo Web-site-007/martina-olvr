@@ -169,6 +169,13 @@ As notificações Webhooks permitem ao Mercado Pago enviar informações em **te
 - Branch: main
 - Usuário: Web-site-007
 
+## Vercel
+- Projeto: martina-olvr
+- URL: https://martina-olvr.vercel.app
+- Team ID: team_Jsgk9L2xfoU6oD9ocXnotlAA
+- Project ID: prj_1K4Ki4gtZ4brwR2XxzfvUpyNSeZ1
+- Token: (salvo localmente, não commitado por segurança)
+
 ## Status do projeto
 - [x] Documentação Mercado Pago estudada
 - [x] Credenciais de teste recebidas (Access Token + Public Key)
@@ -190,14 +197,36 @@ As notificações Webhooks permitem ao Mercado Pago enviar informações em **te
 - [x] Device ID (X-meli-session-id) enviado no header da criação de Order
 - [x] additional_info.payer.registration_date enviado na criação da Order
 - [x] payer.address completo (street_name, street_number, zip_code, city, state)
-- [ ] Criar conta no GitHub
-- [ ] Criar repositório e subir código
-- [ ] Criar conta no Vercel/Railway
-- [ ] Subir site no hosting (precisa de Node.js, não Netlify)
-- [ ] Trocar credenciais pra produção no .env
-- [ ] Configurar webhook no painel Mercado Pago (URL HTTPS + chave secreta)
+- [x] Criar conta no GitHub
+- [x] Criar repositório e subir código
+- [x] Criar conta no Vercel
+- [x] Subir site no Vercel (Node.js serverless)
+- [x] Configurar variáveis de ambiente no Vercel (MP_ACCESS_TOKEN, MP_PUBLIC_KEY, MP_WEBHOOK_SECRET)
+- [x] Configurar webhook no painel Mercado Pago (sandbox)
+- [x] Adicionar endpoints OAuth (/oauth/authorize, /oauth/callback) para qualidade MP
+- [ ] Testar pagamento Pix em sandbox (pendente — usuário vai tentar pagar via Santander)
+- [ ] Confirmar que webhook dispara ao receber pagamento
+- [ ] Medir qualidade MP novamente (meta: 100/100)
+- [ ] Gerar credenciais de produção no Mercado Pago
+- [ ] Trocar credenciais pra produção no Vercel
 - [ ] Testar Pix, Cartão e Boleto em produção
-- [ ] Testar webhook com Order ID de teste
+- [ ] Configurar webhook em produção
+
+## Medição de Qualidade MP (14 itens)
+**Data:** 18/ago/2026 | **Resultado:** 79/100 | **Pendente:** 4 tarefas
+
+### Status dos requisitos
+| Requisito | Status | Nota |
+|-----------|--------|------|
+| SDK do frontend | ✅ Implementado | `sdk.mercadopago.com/js/v2` + inicialização |
+| OAuth | ✅ Endpoints criados | `/oauth/authorize` + `/oauth/callback` |
+| Webhook | ⚠️ Configurado | Precisa de 1 pagamento confirmado pra validar |
+| Integrator ID | ❌ Não se aplica | Só para Programa de Parcerias |
+
+### Ação necessária
+1. Usuário precisa pagar um Pix no sandbox pra webhook disparar
+2. Depois medir qualidade novamente — deve subir pra 100/100
+3. Com 100/100, gerar credenciais de produção
 
 ## Para ir pra produção
 
