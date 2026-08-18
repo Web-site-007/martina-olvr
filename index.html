@@ -461,11 +461,15 @@
             <div class="pix-qr-wrapper">
               <img id="pixQrCode" src="" alt="QR Code Pix"/>
             </div>
-            <p style="color:var(--text-muted);font-size:0.75rem;margin-top:12px;margin-bottom:4px">Ou copie o código Pix:</p>
+            <div id="pixTicketLink" style="display:none;margin-top:12px">
+              <a id="pixTicketUrl" href="#" target="_blank" style="display:inline-block;padding:10px 20px;border-radius:10px;background:var(--primary);color:white;text-decoration:none;font-weight:600;font-size:0.85rem;transition:all 0.2s">Abrir página de pagamento</a>
+            </div>
+            <p style="color:var(--text-muted);font-size:0.75rem;margin-top:12px;margin-bottom:4px">Ou copie o código Pix copia e cola:</p>
             <div class="pix-code-box">
-              <textarea id="pixCodeText" class="pix-code-text" readonly rows="3"></textarea>
+              <textarea id="pixCodeText" class="pix-code-text" readonly rows="6"></textarea>
               <button class="pix-copy" onclick="copyPix()">Copiar código</button>
             </div>
+            <p style="color:var(--text-muted);font-size:0.7rem;margin-top:8px;line-height:1.5">No app do banco,选择 a opção <strong>Pix copia e cola</strong> e cole o código acima.</p>
             <p id="pixStatus" style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)"></p>
           </div>
           <div id="pixError" style="display:none;text-align:center;padding:20px 0">
@@ -733,6 +737,7 @@
       document.getElementById('pixError').style.display = 'none';
       document.getElementById('pixForm').style.display = 'block';
       document.getElementById('pixCodeText').value = '';
+      document.getElementById('pixTicketLink').style.display = 'none';
       document.getElementById('cardForm').style.display = 'block';
       document.getElementById('cardLoading').style.display = 'none';
       document.getElementById('cardError').textContent = '';
@@ -845,6 +850,7 @@
       const payment = order.transactions && order.transactions.payments && order.transactions.payments[0];
       const qrImg = payment && payment.payment_method && payment.payment_method.qr_code_base64;
       const pixCopyPaste = payment && payment.payment_method && payment.payment_method.qr_code;
+      const ticketUrl = payment && payment.payment_method && payment.payment_method.ticket_url;
 
       if (qrImg) {
         const img = document.getElementById('pixQrCode');
@@ -857,6 +863,12 @@
       if (pixCopyPaste) {
         window._pixCopyPaste = pixCopyPaste;
         document.getElementById('pixCodeText').value = pixCopyPaste;
+        console.log('Pix copia e cola length:', pixCopyPaste.length);
+      }
+
+      if (ticketUrl) {
+        document.getElementById('pixTicketLink').style.display = 'block';
+        document.getElementById('pixTicketUrl').href = ticketUrl;
       }
 
       document.getElementById('pixStatus').textContent = 'Status: Aguardando pagamento...';
