@@ -267,25 +267,6 @@
     }
     .boleto-box a:hover { background: var(--primary-hover); }
 
-    /* Crypto */
-    .crypto-box { text-align: center; }
-    .crypto-info { margin: 20px 0; text-align: left; }
-    .crypto-feature {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px; margin-bottom: 8px;
-      background: var(--bg); border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-    .crypto-icon { font-size: 1.5rem; flex-shrink: 0; }
-    .crypto-feature strong { font-size: 0.9rem; display: block; margin-bottom: 2px; }
-    .crypto-feature p { color: var(--text-muted); font-size: 0.75rem; margin: 0; }
-    .crypto-box a {
-      display: inline-block; padding: 12px 24px; border-radius: 12px;
-      background: var(--primary); color: white; text-decoration: none;
-      font-weight: 600; margin-top: 12px; transition: all 0.2s;
-    }
-    .crypto-box a:hover { background: var(--primary-hover); }
-
     /* Loading */
     .loading { display: flex; align-items: center; justify-content: center; padding: 30px; }
     .spinner {
@@ -415,7 +396,6 @@
         <button class="payment-tab active" onclick="switchTab('pix')">Pix</button>
         <button class="payment-tab" onclick="switchTab('card')">Cartão</button>
         <button class="payment-tab" onclick="switchTab('boleto')">Boleto</button>
-        <button class="payment-tab" onclick="switchTab('crypto')">Crypto</button>
       </div>
 
       <!-- Pix Panel -->
@@ -642,50 +622,6 @@
         </div>
       </div>
 
-      <!-- Crypto Panel -->
-      <div class="payment-panel" id="panel-crypto">
-        <div class="crypto-box" id="cryptoContent">
-          <div id="cryptoForm">
-            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px;text-align:center">
-              Pague com criptomoedas (USDT, BTC, ETH e mais de 70 moedas)
-            </p>
-            <div class="crypto-info">
-              <div class="crypto-feature">
-                <span class="crypto-icon">🔒</span>
-                <div>
-                  <strong>Seguro</strong>
-                  <p>Pagamento via blockchain com confirmação automática</p>
-                </div>
-              </div>
-              <div class="crypto-feature">
-                <span class="crypto-icon">⚡</span>
-                <div>
-                  <strong>Rápido</strong>
-                  <p>Confirmação em minutos, sem burocracia</p>
-                </div>
-              </div>
-              <div class="crypto-feature">
-                <span class="crypto-icon">💰</span>
-                <div>
-                  <strong>Taxa baixa</strong>
-                  <p>A partir de 0.20% por transação</p>
-                </div>
-              </div>
-            </div>
-            <button class="pay-btn" id="payCryptoBtn" onclick="payWithCrypto()">Pagar com Crypto</button>
-          </div>
-          <div class="loading" id="cryptoLoading" style="display:none"><div class="spinner"></div></div>
-          <div id="cryptoResult" style="display:none">
-            <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:16px">Clique abaixo para acessar a página de pagamento</p>
-            <a id="cryptoLink" href="#" target="_blank" class="pay-btn" style="display:inline-block;text-decoration:none">Abrir página de pagamento</a>
-            <p id="cryptoStatus" style="margin-top:12px;font-size:0.75rem;color:var(--text-muted)"></p>
-          </div>
-          <div id="cryptoError" style="display:none;text-align:center;padding:20px 0">
-            <p style="color:#ef4444;font-size:0.85rem" id="cryptoErrorMsg"></p>
-          </div>
-        </div>
-      </div>
-
       <!-- Loading overlay for card -->
       <div id="cardLoading" style="display:none">
         <div class="loading"><div class="spinner"></div></div>
@@ -811,10 +747,6 @@
       document.getElementById('boletoSuccess').style.display = 'none';
       document.getElementById('boletoErrorMsg').style.display = 'none';
       document.getElementById('boletoForm').style.display = 'block';
-      document.getElementById('cryptoForm').style.display = 'block';
-      document.getElementById('cryptoLoading').style.display = 'none';
-      document.getElementById('cryptoResult').style.display = 'none';
-      document.getElementById('cryptoError').style.display = 'none';
     }
 
     function closeModal() {
@@ -839,9 +771,6 @@
       } else if (tab === 'boleto') {
         document.querySelectorAll('.payment-tab')[2].classList.add('active');
         document.getElementById('panel-boleto').classList.add('active');
-      } else if (tab === 'crypto') {
-        document.querySelectorAll('.payment-tab')[3].classList.add('active');
-        document.getElementById('panel-crypto').classList.add('active');
       }
     }
 
@@ -1162,37 +1091,6 @@
       document.getElementById('boletoErrorMsg').style.display = 'none';
 
       await createOrderAndPay('boleto', { email, firstName, lastName, doc, zipCode, street, streetNumber, city, state });
-    }
-
-    // Pay with Crypto (Finassets)
-    async function payWithCrypto() {
-      document.getElementById('cryptoForm').style.display = 'none';
-      document.getElementById('cryptoLoading').style.display = 'flex';
-      document.getElementById('cryptoError').style.display = 'none';
-
-      try {
-        const res = await fetch('/api/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan: currentPlan })
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Erro ao criar pagamento');
-        }
-
-        document.getElementById('cryptoLoading').style.display = 'none';
-        document.getElementById('cryptoResult').style.display = 'block';
-        document.getElementById('cryptoLink').href = data.url;
-        document.getElementById('cryptoStatus').textContent = 'Status: Aguardando pagamento...';
-      } catch (err) {
-        console.error('Erro crypto:', err);
-        document.getElementById('cryptoLoading').style.display = 'none';
-        document.getElementById('cryptoForm').style.display = 'block';
-        document.getElementById('cryptoError').style.display = 'block';
-        document.getElementById('cryptoErrorMsg').textContent = 'Erro ao gerar pagamento: ' + err.message;
-      }
     }
 
     // Copy pix
