@@ -1,7 +1,7 @@
 {
-  "name": "martina-olvr-pagamento",
+  "name": "projeto-pagamento",
   "version": "1.0.0",
-  "description": "Integração Mercado Pago - Martina Olvr",
+  "description": "Template de assinaturas com Mercado Pago",
   "main": "server.js",
   "engines": {
     "node": ">=18.0.0"

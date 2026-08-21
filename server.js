@@ -70,9 +70,9 @@ const NOTIFICATION_URL = process.env.MP_NOTIFICATION_URL || `${SITE_URL}/webhook
 
 // Planos
 const PLANS = {
-  mensal: { name: 'Assinatura Mensal - Martina Olvr', price: '15.00', months: 1 },
-  trimestral: { name: 'Assinatura Trimestral - Martina Olvr', price: '60.00', months: 3 },
-  semestral: { name: 'Assinatura Semestral - Martina Olvr', price: '105.00', months: 6 }
+  mensal: { name: 'Assinatura Mensal - [NOME DO CLIENTE]', price: '15.00', months: 1 },
+  trimestral: { name: 'Assinatura Trimestral - [NOME DO CLIENTE]', price: '60.00', months: 3 },
+  semestral: { name: 'Assinatura Semestral - [NOME DO CLIENTE]', price: '105.00', months: 6 }
 };
 
 // Card brand mapping (bin prefix -> brand)
@@ -180,7 +180,7 @@ async function handleCreateOrder(req, res) {
       ...(paymentMethod === 'credit_card' ? { capture_mode: 'automatic' } : {}),
       total_amount: planData.price,
       description: planData.name,
-      external_reference: `martina-${plan}-${Date.now()}`,
+      external_reference: `${plan}-${Date.now()}`,
       payer,
       additional_info: {
         'payer.registration_date': new Date().toISOString(),
@@ -197,7 +197,7 @@ async function handleCreateOrder(req, res) {
       },
       items: [{
         title: planData.name,
-        description: `Assinatura ${plan} - Martina Olvr - ${planData.months} mes(es) de acesso ao conteudo exclusivo`,
+        description: `Assinatura ${plan} - ${planData.months} mes(es) de acesso`,
         unit_price: planData.price,
         quantity: 1,
         category_id: 'subscription',
